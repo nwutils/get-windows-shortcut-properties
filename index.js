@@ -23,14 +23,22 @@ function throwError (customLogger, message, error) {
   }
 }
 
-function generateCommand (filePath) {
-  const command = [
-    '(New-Object -COM WScript.Shell).CreateShortcut(',
-    filePath,
-    ');'
-  ].join('\'');
+function generateCommands (filePaths, customLogger) {
+  const commands = [];
 
-  return command;
+  for (let filePath of filePaths) {
+    const normalizedFile = normalizeFile(filePath, customLogger);
+    if (normalizedFile) {
+      const command = [
+        '(New-Object -COM WScript.Shell).CreateShortcut(',
+        filePath,
+        ');'
+      ].join('\'');
+      commands.push(command);
+    }
+  }
+
+  return commands;
 }
 
 function inputsAreValid (filePath, customLogger) {
@@ -45,13 +53,12 @@ function inputsAreValid (filePath, customLogger) {
   }
   if (
     !filePath ||
-    typeof(filePath) !== 'string' ||
     (
-      !filePath.endsWith('.lnk') &&
-      !filePath.endsWith('.url')
+      !Array.isArray(filePath) &&
+      typeof(filePath) !== 'string'
     )
   ) {
-    throwError(customLogger, 'Input must be a string of a file path to a .lnk or .url file');
+    throwError(customLogger, 'First argument must be a String or Array of strings');
     valid = false;
   }
   return valid;
@@ -59,8 +66,16 @@ function inputsAreValid (filePath, customLogger) {
 
 function normalizeFile (filePath, customLogger) {
   const normalizedFile = path.normalize(path.resolve(filePath));
-  if (!fs.existsSync(normalizedFile)) {
-    throwError(customLogger, 'Input must be a .lnk or .url file that exists');
+  if (
+    !filePath ||
+    typeof(filePath) !== 'string' ||
+    (
+      !filePath.endsWith('.lnk') &&
+      !filePath.endsWith('.url')
+    ) ||
+    !fs.existsSync(normalizedFile)
+  ) {
+    throwError(customLogger, 'File path must point to a .lnk or .url file that exists');
     return false;
   }
   return normalizedFile;
@@ -70,13 +85,15 @@ function getWindowsShortcutProperties (filePath, customLogger) {
   if (!inputsAreValid(filePath, customLogger)) {
     return;
   }
-
-  const normalizedFile = normalizeFile(filePath, customLogger);
-  if (!normalizedFile) {
-    return;
+  if (typeof(filePath) === 'string') {
+    filePath = [filePath];
   }
 
-  const command = 'powershell.exe -command "' + generateCommand(normalizedFile) + '"';
+  const commands = generateCommands(filePath, customLogger).join('');
+  if (!commands || !Array.isArray(commands) || !commands.length) {
+    return;
+  }
+  const command = 'powershell.exe -command "' + commands + '"';
   try {
     const rawData = exec(command);
     const parsed = parseRawData(rawData);

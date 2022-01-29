@@ -17,39 +17,55 @@ This library is completely **SYNCHRONOUS**.
 const getWindowsShortcutProperties = require('get-windows-shortcut-properties');
 
 if (process.platform === 'win32') {
-  const SublimeText = getWindowsShortcutProperties.sync('../Sublime Text.lnk');
-  const Firefox = getWindowsShortcutProperties.sync('C:\\Users\\Public\\Desktop\\Firefox.lnk');
-  console.log({ SublimeText, Firefox });
+  const output = getWindowsShortcutProperties.sync([
+    '../Sublime Text.lnk',
+    'C:\\Users\\Public\\Desktop\\Firefox.lnk'
+  ]);
+  if (ouput) {
+    console.log(output);
+  } else {
+    console.log('There was an error');
+  }
 }
 ```
 
 ## Documentation
 
 
-### Input
+### getWindowsShortcutProperties.sync
 
-Key            | Type     | Allowed            | Required | Description
-:--            | :--      | :--                | :--      | :--
-`filePath`     | string   | Must end in `.lnk` | yes      | The path to the LNK file you want the properties of
-`customLogger` | function | Any function       | no       | This is a function that is called with a message and error object, if something fails. Defaults to using `console.error`.
+* First argument
+  * **KEY:** `filePath`
+  * **TYPE:** *String or Array of Strings*
+  * **DESCRIPTION:** The path to the shortcut file you want the properties of, or an array of strings to multiple files
+  * **REQUIREMENTS:** Strings must exist and end in `.lnk` or `.url`
+  * **PERFORMANCE:** Passing in an array of files is significantly faster than running this library once for every file. Each run has a ~0.25s overhead cost of spinning up powershell. So we group all your files into one request and they run together. (meaning 100 individual runs = 25 seconds versus one run with 100 files passed in = 0.4s).
+  * **WARNING:** Passing in **too many** files at once will produce a powershell command that is too long to run. For me it worked with \~92 files and no more. But it's all about the total command length produced by this library. So longer file paths will mean fewer files can be passed in at once. Relative paths are normalized by Node, so using them will not help or hurt.
+* Second argument
+  * **KEY:** `customLogger`
+  * **TYPE:** *function*
+  * **DESCRIPTION:** This is an **optional** function that is called with a message and error object, if something fails. Defaults to using `console.error` if not passed in.
+  * **REQUIREMENTS:** Any function
 
 
 ### Output
 
-Returns `undefined` if there was an error, or an object like so:
+Returns `undefined` if there was an error, or an Array of Objects for each successful file:
 
 ```js
-{
-  FullName: 'C:\\Users\\Owner\\Desktop\\DaVinci Resolve.lnk',
-  Arguments: '',
-  Description: 'Video Editor',
-  Hotkey: '',
-  IconLocation: 'C:\\Program Files\\Blackmagic Design\\DaVinci Resolve\\ResolveIcon.exe,0',
-  RelativePath: '',
-  TargetPath: 'C:\\Program Files\\Blackmagic Design\\DaVinci Resolve\\Resolve.exe',
-  WindowStyle: '1',
-  WorkingDirectory: 'C:\\Program Files\\Blackmagic Design\\DaVinci Resolve\\'
-}
+[
+  {
+    FullName: 'C:\\Users\\Owner\\Desktop\\DaVinci Resolve.lnk',
+    Arguments: '',
+    Description: 'Video Editor',
+    Hotkey: '',
+    IconLocation: 'C:\\Program Files\\Blackmagic Design\\DaVinci Resolve\\ResolveIcon.exe,0',
+    RelativePath: '',
+    TargetPath: 'C:\\Program Files\\Blackmagic Design\\DaVinci Resolve\\Resolve.exe',
+    WindowStyle: '1',
+    WorkingDirectory: 'C:\\Program Files\\Blackmagic Design\\DaVinci Resolve\\'
+  }
+]
 ```
 
 See [Microsoft's Shortcut Documentation](https://docs.microsoft.com/en-us/troubleshoot/windows-client/admin-development/create-desktop-shortcut-with-wsh) for information on these keys and their values.

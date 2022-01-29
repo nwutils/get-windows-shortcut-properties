@@ -79,9 +79,18 @@ function getKeyValuePairFromLines (lines) {
  * @return {object}          Parsed data
  */
 function parseRawData (rawData) {
-  let lines = String(rawData).split('\r\n');
-  lines = handleWeirdLines(lines);
-  return getKeyValuePairFromLines(lines);
+  const fileIndicator = '\r\nFullName         : ';
+  let files = String(rawData).split(fileIndicator);
+  files = files.filter(function (file) {
+    return file !== '\r\n';
+  });
+  files = files.map(function (file) {
+    file = fileIndicator + file;
+    let lines = file.split('\r\n');
+    lines = handleWeirdLines(lines);
+    return getKeyValuePairFromLines(lines);
+  });
+  return files;
 }
 
 module.exports = parseRawData;
