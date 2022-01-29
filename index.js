@@ -8,70 +8,87 @@ const exec = require('child_process').execSync;
 const fs = require('fs');
 const path = require('path');
 
-function throwError (message, error) {
-  console.error(
-    '________________________________\n' +
-    'Get-Windows-Shortcut-Properties:\n' +
-    message,
-    error
-  );
-}
+const parseRawData = require('./src/parse-raw-data.js');
 
-const windowShortcutProperties = [
-  'TargetPath',
-  'Arguments',
-  'Description',
-  'WorkingDirectory',
-  'IconLocation',
-  'WindowStyle',
-  'Hotkey'
-];
-
-function generateCommands (lnkFile) {
-  const commands = [];
-
-  for (let property of windowShortcutProperties) {
-    const command = [
-      '(New-Object -COM WScript.Shell).CreateShortcut(',
-      lnkFile,
-      ').' + property + ';'
-    ].join('\'');
-
-    commands.push(command);
+function throwError (customLogger, message, error) {
+  if (typeof(customLogger) === 'function') {
+    customLogger(message, error);
+  } else {
+    console.error(
+      '________________________________\n' +
+      'Get-Windows-Shortcut-Properties:\n' +
+      message,
+      error
+    );
   }
-
-  return commands.join('');
 }
 
-function getWindowsShortcutProperties (lnkFile) {
-  lnkFile = lnkFile || '';
+function generateCommand (filePath) {
+  const command = [
+    '(New-Object -COM WScript.Shell).CreateShortcut(',
+    filePath,
+    ');'
+  ].join('\'');
+
+  return command;
+}
+
+function inputsAreValid (filePath, customLogger) {
+  let valid = true;
+  if (customLogger && typeof(customLogger) !== 'function') {
+    throwError(customLogger, 'The customLogger must be a function or undefined');
+    valid = false;
+  }
   if (process.platform !== 'win32') {
-    return throwError('Platform is not Windows');
+    throwError(customLogger, 'Platform is not Windows');
+    valid = false;
   }
-  if (typeof(lnkFile) !== 'string' || !lnkFile.endsWith('.lnk')) {
-    return throwError('Input must be a string of a file path to a .lnk file');
+  if (
+    !filePath ||
+    typeof(filePath) !== 'string' ||
+    (
+      !filePath.endsWith('.lnk') &&
+      !filePath.endsWith('.url')
+    )
+  ) {
+    throwError(customLogger, 'Input must be a string of a file path to a .lnk or .url file');
+    valid = false;
   }
+  return valid;
+}
 
-  const normalizedFile = path.normalize(path.resolve(lnkFile));
+function normalizeFile (filePath, customLogger) {
+  const normalizedFile = path.normalize(path.resolve(filePath));
   if (!fs.existsSync(normalizedFile)) {
-    return throwError('Input must be a .lnk file that exists');
+    throwError(customLogger, 'Input must be a .lnk or .url file that exists');
+    return false;
+  }
+  return normalizedFile;
+}
+
+function getWindowsShortcutProperties (filePath, customLogger) {
+  if (!inputsAreValid(filePath, customLogger)) {
+    return;
   }
 
-  const command = 'powershell.exe -command "' + generateCommands(normalizedFile) + '"';
+  const normalizedFile = normalizeFile(filePath, customLogger);
+  if (!normalizedFile) {
+    return;
+  }
+
+  const command = 'powershell.exe -command "' + generateCommand(normalizedFile) + '"';
   try {
-    const results = String(exec(command)).split('\r\n');
-    const output = {};
-
-    for (let i = 0; i < windowShortcutProperties.length; i++) {
-      output[windowShortcutProperties[i]] = results[i];
-    }
-
-    return output;
+    const rawData = exec(command);
+    const parsed = parseRawData(rawData);
+    return parsed;
   } catch (err) {
     if (err) {
-      return throwError('Failed to run powershell command to get shortcut properties', err);
+      throwError(customLogger, 'Failed to run powershell command to get shortcut properties', err);
+      return;
     }
   }
 }
 
-module.exports = getWindowsShortcutProperties;
+module.exports = {
+  sync: getWindowsShortcutProperties
+};

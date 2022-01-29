@@ -2,6 +2,8 @@
 
 A Node.js library to get the properties of a Windows .lnk shortcut file
 
+This library is completely **SYNCHRONOUS**.
+
 
 ## Install Instructions
 
@@ -15,9 +17,9 @@ A Node.js library to get the properties of a Windows .lnk shortcut file
 const getWindowsShortcutProperties = require('get-windows-shortcut-properties');
 
 if (process.platform === 'win32') {
-  const Discord = getWindowsShortcutProperties('../Sublime Text.lnk');
-  const Firefox = getWindowsShortcutProperties('C:\\Users\\Public\\Desktop\\Firefox.lnk');
-  console.log({ Discord, Firefox });
+  const SublimeText = getWindowsShortcutProperties.sync('../Sublime Text.lnk');
+  const Firefox = getWindowsShortcutProperties.sync('C:\\Users\\Public\\Desktop\\Firefox.lnk');
+  console.log({ SublimeText, Firefox });
 }
 ```
 
@@ -26,26 +28,31 @@ if (process.platform === 'win32') {
 
 ### Input
 
-Key        | Type   | Allowed            | Required | Description
-:--        | :--    | :--                | :--      | :--
-`filePath` | string | Must end in `.lnk` | yes      | The path to the LNK file you want the properties of
+Key            | Type     | Allowed            | Required | Description
+:--            | :--      | :--                | :--      | :--
+`filePath`     | string   | Must end in `.lnk` | yes      | The path to the LNK file you want the properties of
+`customLogger` | function | Any function       | no       | This is a function that is called with a message and error object, if something fails. Defaults to using `console.error`.
 
 
 ### Output
 
-Returns an object like so:
+Returns `undefined` if there was an error, or an object like so:
 
 ```js
 {
-  TargetPath: 'C:\\Program Files\\Blackmagic Design\\DaVinci Resolve\\Resolve.exe',
+  FullName: 'C:\\Users\\Owner\\Desktop\\DaVinci Resolve.lnk',
   Arguments: '',
-  Description: '',
-  WorkingDirectory: 'C:\\Program Files\\Blackmagic Design\\DaVinci Resolve\\',
+  Description: 'Video Editor',
+  Hotkey: '',
   IconLocation: 'C:\\Program Files\\Blackmagic Design\\DaVinci Resolve\\ResolveIcon.exe,0',
+  RelativePath: '',
+  TargetPath: 'C:\\Program Files\\Blackmagic Design\\DaVinci Resolve\\Resolve.exe',
   WindowStyle: '1',
-  Hotkey: ''
+  WorkingDirectory: 'C:\\Program Files\\Blackmagic Design\\DaVinci Resolve\\'
 }
 ```
+
+See [Microsoft's Shortcut Documentation](https://docs.microsoft.com/en-us/troubleshoot/windows-client/admin-development/create-desktop-shortcut-with-wsh) for information on these keys and their values.
 
 
 * * *
