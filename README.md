@@ -1,6 +1,6 @@
 # get-windows-shortcut-properties
 
-A Node.js library to get the properties of a Windows .lnk shortcut file
+A Node.js library to get the properties of a Windows .lnk or .url shortcut file.
 
 This library is completely **SYNCHRONOUS**.
 
