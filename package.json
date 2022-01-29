@@ -14,8 +14,9 @@
   ],
   "scripts": {
     "start": "node index.js",
-    "lint": "eslint --config=.eslintrc.js index.js",
-    "fix": "eslint --fix --config=.eslintrc.js index.js"
+    "lint": "eslint --config=.eslintrc.js index.js manual-test.js",
+    "fix": "eslint --fix --config=.eslintrc.js index.js manual-test.js",
+    "test": "node manual-test.js"
   },
   "dependencies": {
   },
