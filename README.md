@@ -163,3 +163,11 @@ This repo was inspired by:
 * Fix reported bugs with a PR
 * Offer an async and sync mode, instead of just sync.
 * This repo is written using `require` for imports. It would be nice to also support ESM imports.
+
+
+* * *
+
+
+## Related Libraries:
+
+* [create-desktop-shortcuts](https://github.com/nwutils/create-desktop-shortcuts)
