@@ -70,11 +70,13 @@ function getKeyValuePairFromLines (lines) {
 
 /**
  * Takes in a raw data bitstream from the Powershell output,
- * processes it a string, then an Array of lines, then an object
- * of key/value pairs.
+ * processes it to a string, then an Array of files, then
+ * each file as an array of lines, then each file as an
+ * object of key/value pairs. Returns array of objects for
+ * each file.
  *
  * @param  {string} rawData  Raw stream
- * @return {object}          Parsed data
+ * @return {array}           Parsed data
  */
 function parseRawData (rawData) {
   const fileIndicator = '\r\nFullName         : ';
