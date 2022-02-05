@@ -20,9 +20,7 @@ function handleWeirdLines (lines) {
       lines[i] = '';
     }
   }
-  lines = lines.filter(function (line) {
-    return !!line;
-  });
+  lines = lines.filter(Boolean);
   return lines;
 }
 
