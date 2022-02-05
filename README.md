@@ -94,15 +94,13 @@ if (process.platform === 'win32') {
 
 ### getWindowsShortcutProperties.sync
 
-* First argument
-  * **KEY:** `filePath`
+* First argument: `filePath`
   * **TYPE:** *String or Array of Strings*
   * **DESCRIPTION:** The path to the shortcut file you want the properties of, or an array of strings to multiple files
   * **REQUIREMENTS:** Strings must point to a file that exists and ends in `.lnk` or `.url`
   * **PERFORMANCE:** Passing in an array of files is significantly faster than running this library once for every file. Each run has a ~0.25s overhead cost of spinning up PowerShell. So we group all your files into one request and they run together. (meaning 100 individual runs = 25 seconds versus one run with 100 files passed in = 0.4s).
   * **WARNING:** Passing in **too many** files at once will produce a PowerShell command that is too long to run. For me it worked with 92 files and no more. But it's all about the total command length produced by this library. So longer file paths will mean fewer files can be passed in at once. Relative paths are normalized by Node, so using them will not help or hurt.
-* Second argument
-  * **KEY:** `customLogger`
+* Second argument: `customLogger`
   * **TYPE:** *function*
   * **DESCRIPTION:** This is an **optional** function that is called with a message and error object (if something fails, or you pass in bad inputs). Defaults to using `console.error` if not passed in.
 
