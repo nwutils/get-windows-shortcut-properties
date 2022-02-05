@@ -107,7 +107,7 @@ if (process.platform === 'win32') {
 
 ### Output
 
-Returns `undefined` if there was an error, or an Array of Objects for each successful file:
+Returns `undefined` if all files errored, or an Array of Objects for each successful file:
 
 ```js
 [
@@ -136,7 +136,7 @@ If you pass in an array of files, and some succeed, you will get an array of the
 
 ## OS Support
 
-Only works on Windows OS's that has PowerShell installed.
+Only works on Windows OS's that have PowerShell installed.
 
 
 * * *
