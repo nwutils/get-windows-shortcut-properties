@@ -90,7 +90,7 @@ function getWindowsShortcutProperties (filePath, customLogger) {
   }
 
   const commands = generateCommands(filePath, customLogger).join('');
-  if (!commands || !Array.isArray(commands) || !commands.length) {
+  if (!commands || !commands.length) {
     return;
   }
   const command = 'powershell.exe -command "' + commands + '"';
