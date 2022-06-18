@@ -21,7 +21,7 @@ const getWindowsShortcutProperties = require('get-windows-shortcut-properties');
 if (process.platform === 'win32') {
   const output = getWindowsShortcutProperties.sync('../Sublime Text.lnk');
 
-  if (ouput) {
+  if (output) {
     console.log(output);
   } else {
     console.log('There was an error');
@@ -39,7 +39,7 @@ if (process.platform === 'win32') {
     '../Sublime Text.lnk',
     'C:\\Users\\Public\\Desktop\\Firefox.lnk'
   ]);
-  if (ouput) {
+  if (output) {
     console.log(output);
   } else {
     console.log('There was an error');
@@ -57,7 +57,7 @@ if (process.platform === 'win32') {
     console.log(message, error);
   });
 
-  if (ouput) {
+  if (output) {
     console.log(output);
   } else {
     console.log('There was an error');
@@ -80,7 +80,7 @@ if (process.platform === 'win32') {
   }
   const output = getWindowsShortcutProperties.sync(shortcuts, customLogger);
 
-  if (ouput) {
+  if (output) {
     console.log(output);
   } else {
     console.log('There was an error');
