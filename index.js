@@ -81,6 +81,29 @@ function normalizeFile (filePath, customLogger) {
   return normalizedFile;
 }
 
+/**
+ * @callback customLoggerCallback
+ * @param {string} message
+ * @param {Error} error
+ * 
+ * @typedef {{
+ *  FullName: string,
+ * 	Arguments: string,
+ * 	Description: string,
+ *  Hotkey: string,
+ *  IconLocation: string,
+ *  RelativePath: string,
+ *  TargetPath: string,
+ *  WindowStyle: string,
+ *  WorkingDirectory: string
+ * }[]} shortcutProperties
+ */
+
+/**
+ * @param {string} filePath 
+ * @param {customLoggerCallback} customLogger 
+ * @returns {shortcutProperties}
+ */
 function getWindowsShortcutProperties (filePath, customLogger) {
   if (!inputsAreValid(filePath, customLogger)) {
     return;
