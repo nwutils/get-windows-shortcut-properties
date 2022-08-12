@@ -82,27 +82,43 @@ function normalizeFile (filePath, customLogger) {
 }
 
 /**
- * @callback customLoggerCallback
- * @param {string} message
- * @param {Error} error
- * 
- * @typedef {{
- *  FullName: string,
- * 	Arguments: string,
- * 	Description: string,
- *  Hotkey: string,
- *  IconLocation: string,
- *  RelativePath: string,
- *  TargetPath: string,
- *  WindowStyle: string,
- *  WorkingDirectory: string
- * }[]} shortcutProperties
+ * OPTIONAL: console.error is called by default.
+ *
+ * Your own custom logging function called with helpful warning/error
+ * messages from the internal validators.
+ *
+ * @typedef  {Function} CUSTOMLOGGER
+ * @callback {Function} CUSTOMLOGGER
+ * @param    {string}   message       The human readable warning/error message
+ * @param    {object}   [error]       Sometimes an error or options object is passed
+ * @return   {void}
  */
 
 /**
- * @param {string} filePath 
- * @param {customLoggerCallback} customLogger 
- * @returns {shortcutProperties}
+ * @typedef  {object} SHORTCUTPROPERITES
+ * @property {string} FullName            'C:\\Users\\Owner\\Desktop\\DaVinci Resolve.lnk'
+ * @property {string} Arguments           '--foo=bar'
+ * @property {string} Description         'Video Editor'
+ * @property {string} Hotkey              'CTRL+SHIFT+F10'
+ * @property {string} IconLocation        'C:\\Program Files\\Blackmagic Design\\DaVinci Resolve\\ResolveIcon.exe,0'
+ * @property {string} RelativePath        ''
+ * @property {string} TargetPath          'C:\\Program Files\\Blackmagic Design\\DaVinci Resolve\\Resolve.exe'
+ * @property {string} WindowStyle         '1'
+ * @property {string} WorkingDirectory    'C:\\Program Files\\Blackmagic Design\\DaVinci Resolve\\'
+ */
+
+/**
+ * Retrieves the details of OS based shortcuts.
+ *
+ * @example
+ * const output = getWindowsShortcutProperties.sync([
+ *   '../Sublime Text.lnk',
+ *   'C:\\Users\\Public\\Desktop\\Firefox.lnk'
+ * ]);
+ *
+ * @param  {(string|string[])}    filePath      String or array of strings for the filepaths to shortcut files
+ * @param  {CUSTOMLOGGER}         customLogger  Optional function to handle logging human readable errors/warnings
+ * @return {SHORTCUTPROPERITES[]}               Array of objects or undefined, each representing a successful or failed shortcut property
  */
 function getWindowsShortcutProperties (filePath, customLogger) {
   if (!inputsAreValid(filePath, customLogger)) {
