@@ -29,11 +29,16 @@ function generateCommands (filePaths, customLogger) {
   for (let filePath of filePaths) {
     const normalizedFile = normalizeFile(filePath, customLogger);
     if (normalizedFile) {
+      // Escape (') and (’) in the file path for PowerShell syntax
+      const safeFilePath = normalizedFile
+        .replace(/'/g, "''")
+        .replace(/’/g, "’’");
+
       const command = [
-        '(New-Object -COM WScript.Shell).CreateShortcut(',
-        filePath,
-        ');'
-      ].join('\'');
+        '(New-Object -COM WScript.Shell).CreateShortcut(\'',
+        safeFilePath,
+        '\');'
+      ].join('');
       commands.push(command);
     }
   }
