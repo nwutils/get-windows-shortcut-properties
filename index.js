@@ -23,17 +23,19 @@ function throwError (customLogger, message, error) {
   }
 }
 
-function generateCommands (filePaths, customLogger) {
+function generateCommands(filePaths, customLogger) {
   const commands = [];
 
   for (let filePath of filePaths) {
     const normalizedFile = normalizeFile(filePath, customLogger);
     if (normalizedFile) {
+      // Escape single quotes in the file path
+      const safeFilePath = normalizedFile.replace(/'/g, "''");
       const command = [
-        '(New-Object -COM WScript.Shell).CreateShortcut(',
-        filePath,
-        ');'
-      ].join('\'');
+        '(New-Object -COM WScript.Shell).CreateShortcut(\'',
+        safeFilePath,
+        '\');'
+      ].join('');
       commands.push(command);
     }
   }
