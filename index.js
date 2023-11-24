@@ -23,17 +23,17 @@ function throwError (customLogger, message, error) {
   }
 }
 
-function generateCommands(filePaths, customLogger) {
+function generateCommands (filePaths, customLogger) {
   const commands = [];
 
   for (let filePath of filePaths) {
     const normalizedFile = normalizeFile(filePath, customLogger);
     if (normalizedFile) {
-      // Escape single quotes and right single quoation marks(’) in the file path
+      // Escape (') and (’) in the file path for PowerShell syntax
       const safeFilePath = normalizedFile
         .replace(/'/g, "''")
         .replace(/’/g, "’’");
-        
+
       const command = [
         '(New-Object -COM WScript.Shell).CreateShortcut(\'',
         safeFilePath,
