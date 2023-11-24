@@ -29,8 +29,11 @@ function generateCommands(filePaths, customLogger) {
   for (let filePath of filePaths) {
     const normalizedFile = normalizeFile(filePath, customLogger);
     if (normalizedFile) {
-      // Escape single quotes in the file path
-      const safeFilePath = normalizedFile.replace(/'/g, "''");
+      // Escape single quotes and right single quoation marks(’) in the file path
+      const safeFilePath = normalizedFile
+        .replace(/'/g, "''")
+        .replace(/’/g, "’’");
+        
       const command = [
         '(New-Object -COM WScript.Shell).CreateShortcut(\'',
         safeFilePath,
