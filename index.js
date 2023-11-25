@@ -31,8 +31,8 @@ function generateCommands (filePaths, customLogger) {
     if (normalizedFile) {
       // Escape (') and (’) in the file path for PowerShell syntax
       const safeFilePath = normalizedFile
-        .replace(/'/g, "''")
-        .replace(/’/g, "’’");
+        .replace(/'/g, '\'\'')
+        .replace(/’/g, '’’');
 
       const command = [
         '(New-Object -COM WScript.Shell).CreateShortcut(\'',
