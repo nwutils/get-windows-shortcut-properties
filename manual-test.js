@@ -10,7 +10,7 @@ if (process.platform === 'win32') {
     'C:\\Users\\Owner\\Desktop\\GitAhead.lnk',
     'C:\\Users\\Owner\\Desktop\\DaVinci Resolve.lnk'
   ]);
-  console.log(output);
+  console.log(getWindowsShortcutProperties.translate(output));
 }
 
 console.timeEnd(timeLabel);
