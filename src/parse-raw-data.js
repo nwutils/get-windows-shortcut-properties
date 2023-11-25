@@ -4,10 +4,13 @@
  */
 'use strict';
 
-/*
+/**
  * Sometimes long values spill over, this function fixes this. Example:
 IconLocation     : C:\\Users\\Owner\\AppData\\Roaming\\Microsoft\\Installer\\{00000000-0000-0000-0000-000000000000}\\ResolveIco
                    n.exe,0
+ *
+ * @param  {string[]} lines  Array of strings of each line, with weird lines
+ * @return {string[]}        Array of strings of each line, without weird lines
  */
 function handleWeirdLines (lines) {
   const nineteenSpaces = '                   ';
