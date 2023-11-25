@@ -92,7 +92,7 @@ if (process.platform === 'win32') {
 ## Documentation
 
 
-### getWindowsShortcutProperties.sync
+### getWindowsShortcutProperties.sync API
 
 * First argument: `filePath`
   * **TYPE:** *String or Array of Strings*
@@ -105,7 +105,7 @@ if (process.platform === 'win32') {
   * **DESCRIPTION:** This is an **optional** function that is called with a message and error object (if something fails, or you pass in bad inputs). Defaults to using `console.error` if not passed in.
 
 
-### Output
+### getWindowsShortcutProperties.sync Output
 
 Returns `undefined` if all files errored, or an Array of Objects for each successful file:
 
@@ -129,6 +129,51 @@ See [Microsoft's Shortcut Documentation](https://docs.microsoft.com/en-us/troubl
 
 
 If you pass in an array of files, and some succeed, you will get an array of the success and console errors for the other files (unless you pass in a `customLogger` function, in which case it gets called when errors occur).
+
+
+### getWindowsShortcutProperties.translate API
+
+* First argument: `shortcutProperties`
+  * **TYPE:** *Array of Objects*
+  * **DESCRIPTION:** Each object in the array is the properties for one shortcut, we convert this over to something more human readable.
+* Second argument: `customLogger`
+  * **TYPE:** *function*
+  * **DESCRIPTION:** This is an **optional** function that is called with a message and error object (if something fails, or you pass in bad inputs). Defaults to using `console.error` if not passed in.
+
+
+### getWindowsShortcutProperties.translate Output
+
+Takes in the ouput of `getWindowsShortcutProperties.sync`, and then translates it into the Input for `create-desktop-shortcuts` (a different Node.js library).
+
+```js
+const microsoftNamingConventions = [
+  {
+    FullName: 'C:\\Users\\Owner\\Desktop\\DaVinci Resolve.lnk',
+    Arguments: '--foo',
+    Description: 'Video Editor',
+    Hotkey: 'Ctrl+F10',
+    IconLocation: 'C:\\Program Files\\Blackmagic Design\\DaVinci Resolve\\ResolveIcon.exe,0',
+    RelativePath: '',
+    TargetPath: 'C:\\Program Files\\Blackmagic Design\\DaVinci Resolve\\Resolve.exe',
+    WindowStyle: '1',
+    WorkingDirectory: 'C:\\Program Files\\Blackmagic Design\\DaVinci Resolve\\'
+  }
+];
+const output = getWindowsShortcutProperties.translate(microsoftNamingConventions); // produces the below output
+const output = [
+  {
+    filePath: 'C:\\Users\\Owner\\Desktop\\DaVinci Resolve.lnk',
+    arguments: '--foo',
+    comment: 'Video Editor',
+    hotkey: 'Ctrl+F10',
+    icon: 'C:\\Program Files\\Blackmagic Design\\DaVinci Resolve\\ResolveIcon.exe,0',
+    relativePath: '',
+    targetPath: 'C:\\Program Files\\Blackmagic Design\\DaVinci Resolve\\Resolve.exe',
+    windowMode: 'normal',
+    workingDirectory: 'C:\\Program Files\\Blackmagic Design\\DaVinci Resolve\\'
+  }
+];
+```
 
 
 * * *
